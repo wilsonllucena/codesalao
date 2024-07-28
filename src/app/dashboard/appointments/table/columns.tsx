@@ -59,7 +59,7 @@ export const columns: ColumnDef<Appointment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div>{format(row.getValue("date"), "dd/MM/yyyy")}</div>,
+    cell: ({ row }) => <div>{row.getValue("date")}</div>,
   },
   {
     accessorKey: "hour",

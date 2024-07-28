@@ -18,7 +18,7 @@ type FormProps = {
   company?: CompanyRequest;
   onClose: (open: boolean) => void;
 };
-export function FormCompany({ company, onClose }: FormProps) {
+export function FormCompany({ company }: FormProps) {
   const { toast } = useToast();
   const {
     register,
@@ -36,7 +36,6 @@ export function FormCompany({ company, onClose }: FormProps) {
     try {
       if (company?.id) {
         update({ ...data, id: company.id });
-        onClose(false);
         toast({
           title: "Unidade atualizada",
           description: "Unidade atualizada com sucesso",
@@ -44,13 +43,15 @@ export function FormCompany({ company, onClose }: FormProps) {
         return;
       }
       mutate({ ...data });
-      onClose(false);
       toast({
         title: "Unidade criada",
         description: "Unidade criada com sucesso",
       });
     } catch (error) {
-      console.error("Error saving Serviço");
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar a unidade",
+      });
     }
   };
 

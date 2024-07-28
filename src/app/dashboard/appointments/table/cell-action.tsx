@@ -17,9 +17,10 @@ import { useState } from "react";
 
 import { Modal } from "../../_components/modal";
 import { AlertModal } from "~/components/alert-modal";
-import { api } from "~/trpc/react";
+import { api, queryClient } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import { FormAppointment } from "../form";
+import { GET_APPOINTMENTS } from "~/app/constants";
 
 interface CellActionProps {
   data: any;
@@ -32,7 +33,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [service, setService] = useState<any>(null);
   const { toast } = useToast();
 
-  const { mutate } = api.appointment.delete.useMutation();
+  const { mutate } = api.appointment.delete.useMutation({
+    onSettled: () => {
+      setLoading(false);
+      setOpenDelete(false);
+      queryClient.invalidateQueries({
+        queryKey: [GET_APPOINTMENTS],
+      });
+    },
+  });
 
   function handleModal(open: boolean) {
     setService(data);

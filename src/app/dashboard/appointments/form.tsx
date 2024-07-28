@@ -34,15 +34,18 @@ import {
 import { cn } from "~/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "~/components/ui/calendar";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { GET_APPOINTMENTS } from "~/app/constants";
 import MaskedDateInput from "~/components/input-mask";
 type FormProps = {
   appointment?: AppointmentRequest;
   onClose: (open: boolean) => void;
 };
-export function FormAppointment({ appointment, onClose }: FormProps) {
+export function FormAppointment({ appointment }: FormProps) {
   const { toast } = useToast();
+
+  // convert date to DD/MM/YYYY with Date
+
   const form = useForm<AppointmentRequest>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: appointment,
@@ -61,23 +64,32 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
         queryKey: [GET_APPOINTMENTS],
       });
     },
+    onError: () => {
+      toast({
+        title: "Erro ao atualizar agenda",
+        description: "Erro ao atualizar agenda",
+      });
+    },
   });
   const { data: clients } = api.client.getAll.useQuery();
   const { data: services } = api.service.getAll.useQuery();
 
   const handleSave = async (data: AppointmentRequest) => {
     try {
-      data.date = format(data.date, "yyyy-MM-dd");
+      const formattedDate = data.date.split("/").reverse().join("-");
       if (appointment?.id) {
-        update({ ...data, id: appointment.id, name: appointment.name ?? "" });
-        onClose(false);
+        update({
+          ...data,
+          id: appointment.id,
+          name: appointment.name ?? "",
+          date: formattedDate,
+        });
         toast({
           title: "Agenda atualizada",
           description: "Agenda atualizada com sucesso",
         });
       } else {
         mutate({ ...data });
-        onClose(false);
         toast({
           title: "Agenda criada",
           description: "Agenda salva com sucesso",
@@ -172,11 +184,12 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
                     <FormLabel>Data</FormLabel>
                     <FormControl>
                       <MaskedDateInput
-                        onChange={field.onChange}
-                        value={field.value}
+                        {...field}
+                        mask="date"
+                        placeholder="99/99/9999"
                       />
                     </FormControl>
-                    <FormMessage />x
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -189,7 +202,11 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
                   <FormItem>
                     <FormLabel>Hora</FormLabel>
                     <FormControl>
-                      <Input placeholder="09:00" {...field} />
+                      <MaskedDateInput
+                        {...field}
+                        mask="time"
+                        placeholder="09:00"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

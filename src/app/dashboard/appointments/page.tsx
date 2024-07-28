@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { http } from "~/lib/axios";
 import { GET_APPOINTMENTS } from "~/app/constants";
 import { useQuery } from "@tanstack/react-query";
+import { addDays } from "date-fns";
 
 async function fetchAppointments(userId: string) {
   return await http.get(`/api/appointments/${userId}`);
@@ -34,6 +35,7 @@ export default function Page() {
     name: appointment!.client?.name
       ? appointment!.client?.name
       : appointment?.name,
+    date: addDays(new Date(appointment!.date), 1).toLocaleDateString("pt-BR"),
     service: appointment!.service?.name,
   }));
 
