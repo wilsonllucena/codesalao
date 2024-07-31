@@ -11,33 +11,34 @@ import {
 } from "~/server/api/trpc";
 
 export const appointmentRouter = createTRPCRouter({
-  getAll: protectedProcedure
-    .query(({ ctx }) => {
-      return ctx.db.appointment.findMany({
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          date: true,
-          hour: true,
-          clientId: true,
-          serviceId: true,
-          client: { select: { name: true } },
-          service: { select: { name: true } },
-        },
-        where: { user: { id: ctx.session.user.id } },
-        orderBy: { createdAt : "desc" },
-      });
-    }),
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.appointment.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        status: true,
+        date: true,
+        hour: true,
+        clientId: true,
+        serviceId: true,
+        client: { select: { name: true } },
+        service: { select: { name: true } },
+      },
+      where: { user: { id: ctx.session.user.id } },
+      orderBy: { createdAt: "desc" },
+    });
+  }),
 
-    all: publicProcedure
+  all: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input}) => {
+    .query(({ ctx, input }) => {
       return ctx.db.appointment.findMany({
         select: {
           id: true,
           name: true,
           description: true,
+          status: true,
           date: true,
           hour: true,
           clientId: true,
@@ -46,7 +47,7 @@ export const appointmentRouter = createTRPCRouter({
           service: { select: { name: true } },
         },
         where: { user: { id: input.id } },
-        orderBy: { createdAt : "desc" },
+        orderBy: { createdAt: "desc" },
       });
     }),
 
@@ -54,10 +55,10 @@ export const appointmentRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.db.appointment.findFirst({
-        where: { 
+        where: {
           id: input.id,
           userId: ctx.session.user.id,
-         },
+        },
       });
     }),
 
@@ -66,45 +67,64 @@ export const appointmentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.appointment.create({
         data: {
-            name: input.name || "",
-            description: input.description || "",
-            date: input.date,
-            hour: input.hour,
-            client: { connect: { id: input.clientId } },
-            service: { connect: { id: input.serviceId } },
-            user: { connect: { id: ctx.session.user.id } ,
-          },
-        }
+          name: input.name || "",
+          description: input.description || "",
+          date: input.date,
+          hour: input.hour,
+          client: { connect: { id: input.clientId } },
+          service: { connect: { id: input.serviceId } },
+          user: { connect: { id: ctx.session.user.id } },
+        },
       });
     }),
 
+  // createAppointment: publicProcedure
+  //   .input(appointmentSchema)
+  //   .mutation(async ({ ctx, input }) => {
+  //     return ctx.db.appointment.create({
+  //       data: {
+  //         name: input.name || "",
+  //         description: input.description || "",
+  //         date: input.date,
+  //         hour: input.hour,
+  //         client: { connect: { id: input.clientId } },
+  //         service: { connect: { id: input.serviceId } },
+  //         user: {
+  //           connect: { id: input.userId },
+  //         },
+  //       },
+  //     });
+  //   }),
+
   delete: protectedProcedure
-    .input(z.object({  id: z.string() }))
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.appointment.delete({
-        where: { 
+        where: {
           id: input.id,
           userId: ctx.session.user.id,
-         },
+        },
       });
     }),
 
   update: protectedProcedure
-    .input(z.object({ 
-      id: z.string(),
-      name: z.string(),
-      description: z.string().optional(),
-      date: z.string(),
-      hour: z.string(),
-      clientId: z.string().optional(),
-      serviceId: z.string().optional(),
-     }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string().optional(),
+        date: z.string(),
+        hour: z.string(),
+        clientId: z.string().optional(),
+        serviceId: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.appointment.update({
-        where: { 
+        where: {
           id: input.id,
           userId: ctx.session.user.id,
-         },
+        },
         data: {
           name: input.name,
           description: input.description || "",
@@ -112,6 +132,25 @@ export const appointmentRouter = createTRPCRouter({
           hour: input.hour,
           client: { connect: { id: input.clientId } },
           service: { connect: { id: input.serviceId } },
+        },
+      });
+    }),
+
+  updateStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.appointment.update({
+        where: {
+          id: input.id,
+          userId: ctx.session.user.id,
+        },
+        data: {
+          status: input.status as any,
         },
       });
     }),

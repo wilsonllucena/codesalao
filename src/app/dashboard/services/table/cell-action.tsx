@@ -49,7 +49,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         description: "Cliente removido com sucesso",
       });
     } catch (error) {
-      console.error("Error removing client" + JSON.stringify(error));
       toast({
         title: "Erro ao remover cliente",
         description: "Erro ao remover cliente",

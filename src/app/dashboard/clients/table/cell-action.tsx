@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "~/components/ui/button";
 import {
@@ -18,8 +14,9 @@ import { useState } from "react";
 import { Modal } from "../../_components/modal";
 import { FormClient } from "../form";
 import { AlertModal } from "~/components/alert-modal";
-import { api } from "~/trpc/react";
+import { api, queryClient } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
+import { GET_CLIENTS } from "~/app/constants";
 
 interface CellActionProps {
   data: any;
@@ -32,7 +29,17 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [client, setClient] = useState<any>(null);
   const { toast } = useToast();
 
-  const { mutate } = api.client.delete.useMutation();
+  const { mutate: deleteClient } = api.client.delete.useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [GET_CLIENTS],
+      });
+      toast({
+        title: "Cliente removido",
+        description: "Cliente removido com sucesso",
+      });
+    },
+  });
 
   function handleModal(open: boolean) {
     setClient(data);
@@ -42,14 +49,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   function handleDelete() {
     try {
       setLoading(true);
-      mutate(data);
+      deleteClient(data);
       setOpenDelete(false);
-      toast({
-        title: "Cliente removido",
-        description: "Cliente removido com sucesso",
-      });
     } catch (error) {
-      console.error("Error removing client" + JSON.stringify(error));
       toast({
         title: "Erro ao remover cliente",
         description: "Erro ao remover cliente",

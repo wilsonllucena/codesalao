@@ -58,7 +58,7 @@ export const columns: ColumnDef<Service>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("email")}</div>,
+    cell: ({ row }) => <div>{row.getValue("description")}</div>,
   },
   {
     id: "actions",

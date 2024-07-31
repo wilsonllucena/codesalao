@@ -13,7 +13,13 @@ export function Navbar() {
             <Home className="h-4 w-4" />
             Dashboard
           </Link>
-
+          <Link
+            href="/dashboard/appointments"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <Calendar className="h-4 w-4" />
+            Agendamentos
+          </Link>
           <Link
             href="/dashboard/clients"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
@@ -29,20 +35,14 @@ export function Navbar() {
             <Package className="h-4 w-4" />
             Serviços{" "}
           </Link>
-          <Link
-            href="/dashboard/appointments"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-          >
-            <Calendar className="h-4 w-4" />
-            Agendamentos
-          </Link>
-          <Link
+
+          {/* <Link
             href="/dashboard/company"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
             <HouseIcon className="h-4 w-4" />
             Unidades
-          </Link>
+          </Link> */}
         </nav>
       </div>
     </>

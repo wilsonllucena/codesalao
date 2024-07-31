@@ -7,14 +7,23 @@ import { serviceSchema } from "~/lib/schemas/service.schema";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 
 export const serviceRouter = createTRPCRouter({
-  getAll: protectedProcedure
-    .query(({  ctx }) => {
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.service.findMany({
+      where: { user: { id: ctx.session.user.id } },
+      orderBy: { createdAt: "desc" },
+    });
+  }),
+
+  all: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => {
       return ctx.db.service.findMany({
-        where: { user: { id: ctx.session.user.id } },
-        orderBy: { createdAt : "desc" },
+        orderBy: { createdAt: "desc" },
+        where: { user: { id: input.id } },
       });
     }),
 
@@ -22,10 +31,10 @@ export const serviceRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.db.service.findFirst({
-        where: { 
+        where: {
           id: input.id,
           userId: ctx.session.user.id,
-         },
+        },
       });
     }),
 
@@ -34,39 +43,43 @@ export const serviceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.service.create({
         data: {
-            name: input.name,
-            description: input.description || "",
-            user: { connect: { id: ctx.session.user.id } ,
-          },
-        }
+          name: input.name,
+          price: input.price,
+          description: input.description || "",
+          user: { connect: { id: ctx.session.user.id } },
+        },
       });
     }),
 
   delete: protectedProcedure
-    .input(z.object({  id: z.string() }))
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.service.delete({
-        where: { 
+        where: {
           id: input.id,
           userId: ctx.session.user.id,
-         },
+        },
       });
     }),
 
   update: protectedProcedure
-    .input(z.object({ 
-      id: z.string(),
-      name: z.string(),
-      description: z.string().optional(),
-     }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        price: z.coerce.number(),
+        description: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.service.update({
-        where: { 
+        where: {
           id: input.id,
           userId: ctx.session.user.id,
-         },
+        },
         data: {
           name: input.name,
+          price: input.price,
           description: input.description || "",
         },
       });

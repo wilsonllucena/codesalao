@@ -9,6 +9,10 @@ const MASK_TYPE = {
   date: "99/99/9999",
   time: "99:99",
   creditCard: "9999 9999 9999 9999",
+  cpf: "999.999.999-99",
+  cnpj: "99.999.999/9999-99",
+  cep: "99999-999",
+  currency: "999.999.999,99",
 } as const;
 
 export interface MaskedDateInputProps

@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api, queryClient } from "~/trpc/react";
@@ -26,35 +25,28 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { cn } from "~/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "~/components/ui/calendar";
-import { addDays, format } from "date-fns";
 import { GET_APPOINTMENTS } from "~/app/constants";
 import MaskedDateInput from "~/components/input-mask";
 type FormProps = {
   appointment?: AppointmentRequest;
   onClose: (open: boolean) => void;
 };
-export function FormAppointment({ appointment }: FormProps) {
+export function FormAppointment({ appointment, onClose }: FormProps) {
   const { toast } = useToast();
-
-  // convert date to DD/MM/YYYY with Date
-
   const form = useForm<AppointmentRequest>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: appointment,
   });
 
-  const { mutate } = api.appointment.create.useMutation({
+  const { mutate: create } = api.appointment.create.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [GET_APPOINTMENTS],
+      });
+      onClose(false);
+      toast({
+        title: "Agenda criada",
+        description: "Agenda salva com sucesso",
       });
     },
   });
@@ -62,6 +54,11 @@ export function FormAppointment({ appointment }: FormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [GET_APPOINTMENTS],
+      });
+      onClose(false);
+      toast({
+        title: "Agenda atualizada",
+        description: "Agenda atualizada com sucesso",
       });
     },
     onError: () => {
@@ -71,6 +68,7 @@ export function FormAppointment({ appointment }: FormProps) {
       });
     },
   });
+
   const { data: clients } = api.client.getAll.useQuery();
   const { data: services } = api.service.getAll.useQuery();
 
@@ -84,16 +82,8 @@ export function FormAppointment({ appointment }: FormProps) {
           name: appointment.name ?? "",
           date: formattedDate,
         });
-        toast({
-          title: "Agenda atualizada",
-          description: "Agenda atualizada com sucesso",
-        });
       } else {
-        mutate({ ...data });
-        toast({
-          title: "Agenda criada",
-          description: "Agenda salva com sucesso",
-        });
+        create({ ...data });
       }
     } catch (error) {}
   };

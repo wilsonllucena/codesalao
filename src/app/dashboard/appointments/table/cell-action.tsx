@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Check, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useState } from "react";
 
 import { Modal } from "../../_components/modal";
@@ -21,6 +21,7 @@ import { api, queryClient } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import { FormAppointment } from "../form";
 import { GET_APPOINTMENTS } from "~/app/constants";
+import { FormModalAppointmentStatus } from "../form-status";
 
 interface CellActionProps {
   data: any;
@@ -29,8 +30,9 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openStatus, setOpenStatus] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [service, setService] = useState<any>(null);
+  const [appointment, setAppointment] = useState<any>(null);
   const { toast } = useToast();
 
   const { mutate } = api.appointment.delete.useMutation({
@@ -44,8 +46,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   });
 
   function handleModal(open: boolean) {
-    setService(data);
+    setAppointment(data);
     setOpen(open);
+  }
+
+  function handleModalStatus(open: boolean) {
+    setAppointment(data);
+    setOpenStatus(open);
   }
 
   function handleDelete() {
@@ -74,7 +81,17 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         loading={loading}
       />
       <Modal title="Editar cliente" open={open} onClose={() => setOpen(false)}>
-        <FormAppointment onClose={setOpen} appointment={service} />
+        <FormAppointment onClose={setOpen} appointment={appointment} />
+      </Modal>
+      <Modal
+        title="Atualizar situação"
+        open={openStatus}
+        onClose={() => setOpenStatus(false)}
+      >
+        <FormModalAppointmentStatus
+          onClose={setOpenStatus}
+          appointment={appointment}
+        />
       </Modal>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
@@ -85,6 +102,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => handleModalStatus(true)}>
+            <Check className="mr-2 h-4 w-4" /> Situação
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleModal(true)}>
             <Edit className="mr-2 h-4 w-4" /> Editar
           </DropdownMenuItem>

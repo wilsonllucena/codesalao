@@ -8,8 +8,15 @@ export const appointmentSchema = z.object({
   serviceId: z.string().min(3, { message: "Serviço é obrigatório" }),
   name: z.string().optional(),
   description: z.string().optional(),
+  status: z.string().optional(),
   email: z.string().optional(),
   service: z.string().optional(),
 });
 
+export const appointmentUpdateSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+});
+
 export type AppointmentRequest = z.infer<typeof appointmentSchema>;
+export type AppointmentStatusRequest = z.infer<typeof appointmentUpdateSchema>;

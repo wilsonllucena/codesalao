@@ -7,12 +7,13 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "~/trpc/react";
+import { api, queryClient } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import {
   type ServiceRequest,
   serviceSchema,
 } from "~/lib/schemas/service.schema";
+import { GET_SERVICES } from "~/app/constants";
 
 type FormProps = {
   service?: ServiceRequest;
@@ -29,28 +30,36 @@ export function FormService({ service, onClose }: FormProps) {
     defaultValues: service,
   });
 
-  const { mutate } = api.service.create.useMutation();
-  const { mutate: update } = api.service.update.useMutation();
-
-  const handleSave = async (data: ServiceRequest) => {
-    try {
-      if (service?.id) {
-        update({ ...data, id: service.id });
-        onClose(false);
-        toast({
-          title: "Serviço atualizado",
-          description: "Serviço atualizado com sucesso",
-        });
-        return;
-      }
-      mutate({ ...data });
+  const { mutate: create } = api.service.create.useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [GET_SERVICES],
+      });
       onClose(false);
       toast({
         title: "Serviço salvo",
         description: "Serviço salvo com sucesso",
       });
-    } catch (error) {
-      console.error("Error saving Serviço");
+    },
+  });
+  const { mutate: update } = api.service.update.useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [GET_SERVICES],
+      });
+      onClose(false);
+      toast({
+        title: "Serviço atualizado",
+        description: "Serviço atualizado com sucesso",
+      });
+    },
+  });
+
+  const handleSave = async (data: ServiceRequest) => {
+    if (service?.id) {
+      update({ ...data, id: service.id });
+    } else {
+      create({ ...data });
     }
   };
 
@@ -69,6 +78,15 @@ export function FormService({ service, onClose }: FormProps) {
             <Input {...register("name")} className="col-span-3" />
             <span className="text-xs text-red-500">
               {errors.name ? errors.name.message : ""}
+            </span>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="price" className="text-right">
+              Preço
+            </Label>
+            <Input {...register("price")} className="col-span-3" />
+            <span className="text-xs text-red-500">
+              {errors.price ? errors.price.message : ""}
             </span>
           </div>
           <div className="space-y-1">

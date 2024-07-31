@@ -3,34 +3,18 @@ import { type Appointment } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
 
 import { CellAction } from "./cell-action";
-import { format } from "date-fns";
+import { Badge } from "~/components/ui/badge";
+
+export const Status = {
+  "": "PENDENTE",
+  pending: "PENDENTE",
+  confirmed: "CONFIRMADO",
+  canceled: "CANCELADO",
+};
 
 export const columns: ColumnDef<Appointment>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -75,6 +59,37 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
     cell: ({ row }) => <div>{row.getValue("hour")}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Situação
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div>
+        {
+          <Badge
+            variant={
+              row.getValue("status") === "confirmed"
+                ? "default"
+                : row.getValue("status") === "canceled"
+                  ? "destructive"
+                  : "secondary"
+            }
+          >
+            {Status[row.getValue("status") as keyof typeof Status]}
+          </Badge>
+        }
+      </div>
+    ),
   },
   {
     id: "actions",

@@ -1,2 +1,3 @@
 export const GET_CLIENTS = "client.all";
 export const GET_APPOINTMENTS = "appointment.all";
+export const GET_SERVICES = "service.all";
