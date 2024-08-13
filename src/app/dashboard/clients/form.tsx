@@ -57,7 +57,7 @@ export function FormClient({ client, onClose }: FormClientProps) {
           description: "Cliente salvo com sucesso",
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (

@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { z } from "zod";
+import { addHours, parseISO, set, startOfHour } from "date-fns";
+import { date, z } from "zod";
 import { appointmentSchema } from "~/lib/schemas/appointment.schema";
 import {
   createTRPCRouter,
@@ -65,11 +66,16 @@ export const appointmentRouter = createTRPCRouter({
   create: protectedProcedure
     .input(appointmentSchema)
     .mutation(async ({ ctx, input }) => {
+      // convert data para hora
+      const formatDate = set(input.date, {
+        hours: Number(input.hour.split(":")[0]),
+        minutes: Number(input.hour.split(":")[1]),
+      });
+      const appointmentDate = addHours(formatDate, -3);
+
       return ctx.db.appointment.create({
         data: {
-          name: input.name || "",
-          description: input.description || "",
-          date: input.date,
+          date: appointmentDate,
           hour: input.hour,
           client: { connect: { id: input.clientId } },
           service: { connect: { id: input.serviceId } },
@@ -120,15 +126,21 @@ export const appointmentRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const formatDate = set(input.date, {
+        hours: Number(input.hour.split(":")[0]),
+        minutes: Number(input.hour.split(":")[1]),
+      });
+      const appointmentDate = addHours(formatDate, -3);
+
       return ctx.db.appointment.update({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
         },
         data: {
-          name: input.name,
+          name: input.name || "",
           description: input.description || "",
-          date: input.date,
+          date: appointmentDate,
           hour: input.hour,
           client: { connect: { id: input.clientId } },
           service: { connect: { id: input.serviceId } },

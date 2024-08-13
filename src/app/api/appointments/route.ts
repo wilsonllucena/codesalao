@@ -1,15 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { api } from "~/trpc/server";
 
-export async function POST(req: NextRequest, ctx: any) {
-  try {
-    const { params } = ctx;
-    const appointments = await api.appointment.all({ id: params.userId });
-    return NextResponse.json({ appointments });
-  } catch (err) {
-    return NextResponse.json(
-      { error: "failed to fetch data" },
-      { status: 500 },
-    );
-  }
+export async function POST(req: NextRequest) {      
+    const body = await req.json();
+    const { name, hour, date, description, clientId, serviceId } = body;
+    await api.appointment.create({
+        name,
+        hour,
+        date,
+        description,
+        clientId,
+        serviceId
+    });
+    return new Response(JSON.stringify({ 
+        message: 'Appointment created successfully',
+    }));
+    
+   
 }

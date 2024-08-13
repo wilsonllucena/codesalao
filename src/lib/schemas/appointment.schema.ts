@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const appointmentSchema = z.object({
   id: z.string().nullish(),
-  date: z.coerce.string(),
+  date: z.string(),
   hour: z.string(),
   clientId: z.string().min(3, { message: "Cliente é obrigatório" }),
   serviceId: z.string().min(3, { message: "Serviço é obrigatório" }),
