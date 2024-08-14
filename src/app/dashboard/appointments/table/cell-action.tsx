@@ -51,6 +51,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   }
 
   function handleModalStatus(open: boolean) {
+    setOpen(false);
     setAppointment(data);
     setOpenStatus(open);
   }
@@ -84,7 +85,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <FormAppointment onClose={setOpen} appointment={appointment} />
       </Modal>
       <Modal
-        title="Atualizar situação"
+        title="Situação da agenda"
+        description="Atualize a situação da agenda"
         open={openStatus}
         onClose={() => setOpenStatus(false)}
       >

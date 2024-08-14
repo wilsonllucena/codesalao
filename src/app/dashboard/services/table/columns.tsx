@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 
 import { CellAction } from "./cell-action";
+import { formatCurrency } from "~/utils/currency";
 
 export const columns: ColumnDef<Service>[] = [
   {
@@ -46,19 +47,19 @@ export const columns: ColumnDef<Service>[] = [
     cell: ({ row }) => <div>{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "description",
+    accessorKey: "price",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Descrição
+          Preço
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("description")}</div>,
+    cell: ({ row }) => <div>{formatCurrency(row.getValue("price"))}</div>,
   },
   {
     id: "actions",

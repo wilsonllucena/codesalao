@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Decimal } from '@prisma/client/runtime/library';
+
 import { z } from "zod";
 import { serviceSchema } from "~/lib/schemas/service.schema";
 import {

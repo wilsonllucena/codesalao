@@ -58,8 +58,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       deleteService(data);
     } catch (error) {
       toast({
-        title: "Erro ao remover cliente",
-        description: "Erro ao remover cliente",
+        title: "Erro ao remover serviço",
+        description: "Erro ao remover serviço",
       });
     }
   }
@@ -72,7 +72,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onConfirm={handleDelete}
         loading={loading}
       />
-      <Modal title="Editar cliente" open={open} onClose={() => setOpen(false)}>
+      <Modal title="Editar serviço" open={open} onClose={() => setOpen(false)}>
         <FormService onClose={setOpen} service={service} />
       </Modal>
       <DropdownMenu modal={false}>

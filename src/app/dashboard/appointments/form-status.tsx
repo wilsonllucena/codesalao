@@ -8,10 +8,7 @@ import { useToast } from "~/components/ui/use-toast";
 import {
   appointmentSchema,
   AppointmentStatusRequest,
-  AppointmentUpdateRequest,
-  type AppointmentRequest,
 } from "~/lib/schemas/appointment.schema";
-import { Textarea } from "~/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -24,7 +21,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { GET_APPOINTMENTS } from "~/app/constants";
@@ -37,7 +33,15 @@ export function FormModalAppointmentStatus({
   onClose,
 }: FormProps) {
   const { toast } = useToast();
-  const form = useForm<AppointmentUpdateRequest>({
+
+  const handleSave = async (data: any) => {
+    update({
+      id: appointment.id,
+      status: data.status,
+    });
+  };
+
+  const form = useForm<AppointmentStatusRequest>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: appointment,
   });
@@ -48,7 +52,6 @@ export function FormModalAppointmentStatus({
         queryKey: [GET_APPOINTMENTS],
       });
       onClose(false);
-      console.log(`Email enviado para ${appointment?.email}`);
       toast({
         title: "Agenda atualizada",
         description: "Agenda atualizada com sucesso",
@@ -56,8 +59,8 @@ export function FormModalAppointmentStatus({
     },
     onError: () => {
       toast({
-        title: "Erro ao atualizar agenda",
-        description: "Erro ao atualizar agenda",
+        title: "Erro ao atualizar status",
+        description: "Erro ao atualizar status da agenda",
       });
     },
   });
@@ -67,12 +70,6 @@ export function FormModalAppointmentStatus({
     { id: "confirmed", name: "Confirmado" },
     { id: "canceled", name: "Cancelado" },
   ];
-  const handleSave = async (data: AppointmentStatusRequest) => {
-    update({
-      id: appointment.id,
-      status: data.status,
-    });
-  };
 
   return (
     <>
@@ -88,7 +85,6 @@ export function FormModalAppointmentStatus({
                 name="status"
                 render={({ field }: any) => (
                   <FormItem>
-                    {/* <FormLabel>Situação</FormLabel> */}
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
@@ -119,7 +115,7 @@ export function FormModalAppointmentStatus({
           </div>
 
           <div className="flex content-end justify-end pt-4">
-            <Button className="pt-2" type="submit">
+            <Button className="pt-2" type="submit" disabled={false}>
               Salvar
             </Button>
           </div>

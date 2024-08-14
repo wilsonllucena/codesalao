@@ -30,15 +30,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
-import {
-  addDays,
-  addHours,
-  format,
-  Locale,
-  parseISO,
-  set,
-  startOfHour,
-} from "date-fns";
+import { addDays, format, parseISO } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "~/components/ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
@@ -53,7 +45,7 @@ const appointmentSchema = z.object({
   clientId: z.string().min(3, { message: "Cliente é obrigatório" }),
   serviceId: z.string().min(3, { message: "Serviço é obrigatório" }),
   name: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   status: z.string().optional(),
   email: z.string().optional(),
   service: z.string().optional(),
@@ -63,6 +55,7 @@ type FormProps = {
   appointment?: any;
   onClose: (open: boolean) => void;
 };
+
 export function FormAppointment({ appointment, onClose }: FormProps) {
   const { toast } = useToast();
   if (appointment) {
@@ -122,18 +115,7 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
 
   const { data: clients } = api.client.getAll.useQuery();
   const { data: services } = api.service.getAll.useQuery();
-  type AppointmentRequest2 = {
-    date: Date;
-    hour: String;
-    clientId: String;
-    serviceId: String;
-    id: String;
-    name: String;
-    description: String;
-    status: String;
-    email: String;
-    service: String;
-  };
+
   const handleSave = async (data: any) => {
     //convertendo para datetimezone
     let date = parseISO(data.date.toISOString()).toString();
@@ -141,11 +123,11 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
 
     try {
       if (appointment?.id) {
-        // return;
         update({
           ...data,
           id: appointment.id,
           name: appointment.name ?? "",
+          description: appointment.description ?? "",
           date: date,
         });
       } else {
@@ -159,12 +141,16 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
         });
         onClose(false);
         toast({
-          title: "Agenda atualizada",
-          description: "Agenda atualizada com sucesso",
+          title: "Cadastro realizado",
+          description: "Agenda cadastrada com sucesso",
         });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      onClose(false);
+      toast({
+        title: "Erro ao salvar",
+        description: `Existe um agendamento para o dia ${format(new Date(date), "dd/MM/yyyy")} às ${data.hour}`,
+      });
     }
   };
 
@@ -246,23 +232,6 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
             </div>
 
             <div className="space-y-1">
-              {/* <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data</FormLabel>
-                    <FormControl>
-                      <MaskedDateInput
-                        {...field}
-                        mask="date"
-                        placeholder="99/99/9999"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
               <FormField
                 control={form.control}
                 name="date"
@@ -284,6 +253,7 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
                             ) : (
                               <span>Escolha um dia</span>
                             )}
+
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>

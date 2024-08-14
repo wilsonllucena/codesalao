@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import { addHours, parseISO, set, startOfHour } from "date-fns";
-import { date, z } from "zod";
+import { addHours, set } from "date-fns";
+import {z} from "zod";
 import { appointmentSchema } from "~/lib/schemas/appointment.schema";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { formatDate } from "~/utils/format-date";
 
 export const appointmentRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
@@ -67,11 +64,9 @@ export const appointmentRouter = createTRPCRouter({
     .input(appointmentSchema)
     .mutation(async ({ ctx, input }) => {
       // convert data para hora
-      const formatDate = set(input.date, {
-        hours: Number(input.hour.split(":")[0]),
-        minutes: Number(input.hour.split(":")[1]),
-      });
-      const appointmentDate = addHours(formatDate, -3);
+
+      const { hour, date } = input;
+      const appointmentDate = formatDate({ date, hour });
 
       return ctx.db.appointment.create({
         data: {
@@ -84,24 +79,6 @@ export const appointmentRouter = createTRPCRouter({
       });
     }),
 
-  // createAppointment: publicProcedure
-  //   .input(appointmentSchema)
-  //   .mutation(async ({ ctx, input }) => {
-  //     return ctx.db.appointment.create({
-  //       data: {
-  //         name: input.name || "",
-  //         description: input.description || "",
-  //         date: input.date,
-  //         hour: input.hour,
-  //         client: { connect: { id: input.clientId } },
-  //         service: { connect: { id: input.serviceId } },
-  //         user: {
-  //           connect: { id: input.userId },
-  //         },
-  //       },
-  //     });
-  //   }),
-
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -109,6 +86,22 @@ export const appointmentRouter = createTRPCRouter({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
+        },
+      });
+    }),
+
+    getByHour: protectedProcedure
+    .input(z.object({ hour: z.string(), date: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { hour, date } = input;
+      const appointmentDate = formatDate({ date, hour });
+
+      return await ctx.db.appointment.findFirst({
+        where: {
+          hour: input.hour,
+          date: appointmentDate,
+          userId: ctx.session.user.id,
+          status: "confirmed",
         },
       });
     }),
