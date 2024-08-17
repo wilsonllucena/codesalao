@@ -25,7 +25,7 @@ export const appointmentRouter = createTRPCRouter({
         service: { select: { name: true } },
       },
       where: { user: { id: ctx.session.user.id } },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ createdAt: "asc" }, { hour: "asc" }, { status: "asc" }],
     });
   }),
 
