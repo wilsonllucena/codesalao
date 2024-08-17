@@ -34,7 +34,10 @@ export default function Page() {
     name: appointment!.client?.name
       ? appointment!.client?.name
       : appointment?.name,
-    date: addDays(new Date(appointment!.date), 1).toLocaleDateString("pt-BR"),
+    date_start: addDays(
+      new Date(appointment!.date_start),
+      1,
+    ).toLocaleDateString("pt-BR"),
     service: appointment!.service?.name,
   }));
 

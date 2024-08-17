@@ -31,7 +31,7 @@ export const columns: ColumnDef<Appointment>[] = [
     cell: ({ row }) => <div>{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "date",
+    accessorKey: "date_start",
     header: ({ column }) => {
       return (
         <Button
@@ -43,7 +43,7 @@ export const columns: ColumnDef<Appointment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("date")}</div>,
+    cell: ({ row }) => <div>{row.getValue("date_start")}</div>,
   },
   {
     accessorKey: "hour",

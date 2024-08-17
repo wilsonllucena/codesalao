@@ -113,8 +113,9 @@ model Appointment {
   id          String             @id @default(cuid())
   name        String?
   description String?            @db.VarChar(500)
-  date        DateTime           @db.Timestamp
   hour        String
+  date_start  DateTime           @db.Timestamp
+  date_end    DateTime?          @db.Timestamp
   status      AppointmentStatus? @default(pending)
   clientId    String?
   client      Client?            @relation(fields: [clientId], references: [id], onDelete: Cascade)

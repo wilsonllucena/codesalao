@@ -40,7 +40,7 @@ import { http } from "~/lib/axios";
 
 const appointmentSchema = z.object({
   id: z.string().nullish(),
-  date: z.date(),
+  date_start: z.date(),
   hour: z.string(),
   clientId: z.string().min(3, { message: "Cliente é obrigatório" }),
   serviceId: z.string().min(3, { message: "Serviço é obrigatório" }),
@@ -60,7 +60,7 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
   const { toast } = useToast();
   if (appointment) {
     // convert dd/MM/yyyy to yyyy-MM-dd
-    const [day, month, year] = appointment.date.split("/");
+    const [day, month, year] = appointment.date_start.split("/");
     const date = new Date(`${year}-${month}-${day}`);
 
     // add day to date-fns
@@ -68,7 +68,7 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
 
     appointment = {
       ...appointment,
-      date: formatedDate,
+      date_start: formatedDate,
     };
   }
   const form = useForm<AppointmentRequest>({
@@ -118,7 +118,7 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
 
   const handleSave = async (data: any) => {
     //convertendo para datetimezone
-    let date = parseISO(data.date.toISOString()).toString();
+    let date = parseISO(data.date_start.toISOString()).toString();
     date = addDays(new Date(date), -1).toISOString();
 
     try {
@@ -128,12 +128,12 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
           id: appointment.id,
           name: appointment.name ?? "",
           description: appointment.description ?? "",
-          date: date,
+          date_start: date,
         });
       } else {
         await http.post("/api/appointments", {
           ...data,
-          date: date,
+          date_start: date,
         });
 
         queryClient.invalidateQueries({
@@ -153,6 +153,12 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
       });
     }
   };
+
+  const situations = [
+    { id: "pending", name: "Pendente" },
+    { id: "confirmed", name: "Confirmado" },
+    { id: "canceled", name: "Cancelado" },
+  ];
 
   return (
     <>
@@ -234,7 +240,7 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
             <div className="space-y-1">
               <FormField
                 control={form.control}
-                name="date"
+                name="date_start"
                 render={({ field }: any) => (
                   <FormItem className="flex flex-col pt-2">
                     <FormLabel>Data</FormLabel>
@@ -295,6 +301,42 @@ export function FormAppointment({ appointment, onClose }: FormProps) {
                 )}
               />
             </div>
+            {appointment?.status && (
+              <div className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }: any) => (
+                    <FormItem>
+                      <FormLabel>Situação</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              defaultValue={field.value}
+                              placeholder="Selecionar situação"
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {/* @ts-ignore  */}
+                          {situations?.map((situation) => (
+                            <SelectItem key={situation.id} value={situation.id}>
+                              {situation.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
             <div className="space-y-1">
               <FormField
                 control={form.control}

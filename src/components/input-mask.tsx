@@ -6,7 +6,7 @@ import { cn } from "~/lib/utils";
 const MASK_TYPE = {
   phone: "+4\\9 99 9999-9999",
   zipCode: "99999-999",
-  date: "99/99/9999",
+  date_start: "99/99/9999",
   time: "99:99",
   creditCard: "9999 9999 9999 9999",
   cpf: "999.999.999-99",
