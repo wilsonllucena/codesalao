@@ -9,9 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import { NavbarMobile } from "./nav-mobile";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export function Header() {
   const { data: session } = useSession();
@@ -40,6 +40,9 @@ export function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{session?.user.email}</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <Link href="/dashboard/profile">
+          <DropdownMenuItem>Perfil</DropdownMenuItem>
+          </Link>
           <DropdownMenuItem onClick={() => signOut()}>Sair</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
