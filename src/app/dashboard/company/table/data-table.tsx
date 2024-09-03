@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+
 "use client";
 import * as React from "react";
 import {
@@ -29,10 +28,10 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { type Company } from "@prisma/client";
+import { Service } from "@prisma/client";
 import { columns } from "./columns";
 
-export function CompanyTable({ data }: { data?: Company[] }) {
+export function CompanyTable({ data }: { data?: Service[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -42,7 +41,7 @@ export function CompanyTable({ data }: { data?: Company[] }) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: data ? data : ([] as Company[]),
+    data: data ? data : ([] as Service[]),
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -72,6 +71,11 @@ export function CompanyTable({ data }: { data?: Company[] }) {
           className="max-w-sm"
         />
         <DropdownMenu>
+          {/* <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Colunas <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger> */}
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()

@@ -1,13 +1,14 @@
 "use client";
-import { type Company } from "@prisma/client";
+import { type Service } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 
 import { CellAction } from "./cell-action";
+import { formatCurrency } from "~/utils/currency";
 
-export const columns: ColumnDef<Company>[] = [
+export const columns: ColumnDef<Service>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -46,19 +47,19 @@ export const columns: ColumnDef<Company>[] = [
     cell: ({ row }) => <div>{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "slug",
+    accessorKey: "description",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Slug
+          Descrição
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("slug")}</div>,
+    cell: ({ row }) => <div>{row.getValue("description")}</div>,
   },
   {
     id: "actions",

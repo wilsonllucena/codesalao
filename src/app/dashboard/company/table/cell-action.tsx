@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "~/components/ui/button";
 import {
@@ -17,8 +13,9 @@ import { useState } from "react";
 
 import { Modal } from "../../_components/modal";
 import { AlertModal } from "~/components/alert-modal";
-import { api } from "~/trpc/react";
+import { api, queryClient } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
+import { GET_COMPANIES } from "~/app/constants";
 import { FormCompany } from "../form";
 
 interface CellActionProps {
@@ -32,7 +29,19 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [company, setCompany] = useState<any>(null);
   const { toast } = useToast();
 
-  const { mutate } = api.service.delete.useMutation();
+  const { mutate: deleteService } = api.company.delete.useMutation({
+    onSuccess: () => {
+      setLoading(false);
+      setOpenDelete(false);
+      queryClient.invalidateQueries({
+        queryKey: [GET_COMPANIES],
+      });
+      toast({
+        title: "Sucesso",
+        description: "Empresa excluida com sucesso",
+      });
+    },
+  });
 
   function handleModal(open: boolean) {
     setCompany(data);
@@ -42,17 +51,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   function handleDelete() {
     try {
       setLoading(true);
-      mutate(data);
-      setOpenDelete(false);
-      toast({
-        title: "Unidade removido",
-        description: "Unidade removido com sucesso",
-      });
+      deleteService(data);
     } catch (error) {
-      console.error("Error removing unidade" + JSON.stringify(error));
       toast({
-        title: "Erro ao remover unidade",
-        description: "Erro ao remover unidade",
+        title: "Erro ao remover empresa",
+        description: "Erro ao remover empresa",
       });
     }
   }
@@ -65,7 +68,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onConfirm={handleDelete}
         loading={loading}
       />
-      <Modal title="Editar unidade" open={open} onClose={() => setOpen(false)}>
+      <Modal title="Editar empresa" open={open} onClose={() => setOpen(false)}>
         <FormCompany onClose={setOpen} company={company} />
       </Modal>
       <DropdownMenu modal={false}>

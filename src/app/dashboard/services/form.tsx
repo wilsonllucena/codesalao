@@ -136,48 +136,6 @@ export function FormService({ service, onClose }: FormProps) {
         </form>
       </Form>
     </>
-    // <>
-    //   <form
-    //     onSubmit={handleSubmit(handleSave)}
-    //     name="formClient"
-    //     className="flex flex-1 flex-col"
-    //   >
-    //     <div className="flex flex-1 flex-col space-y-3">
-    //       <div className="space-y-1">
-    //         <Label htmlFor="name" className="text-right">
-    //           Nome
-    //         </Label>
-    //         <Input {...register("name")} className="col-span-3" />
-    //         <span className="text-xs text-red-500">
-    //           {errors.name ? errors.name.message : ""}
-    //         </span>
-    //       </div>
-    //       <div className="space-y-1">
-    //         <Label htmlFor="price" className="text-right">
-    //           Preço
-    //         </Label>
-    //         <Input {...register("price")} className="col-span-3" />
-    //         <span className="text-xs text-red-500">
-    //           {errors.price ? errors.price.message : ""}
-    //         </span>
-    //       </div>
-    //       <div className="space-y-1">
-    //         <Label htmlFor="username" className="text-right">
-    //           Descriçao
-    //         </Label>
-    //         <Input {...register("description")} className="col-span-3" />
-    //         <span className="text-xs text-red-500">
-    //           {errors.description ? errors.description.message : ""}
-    //         </span>
-    //       </div>
-    //     </div>
-
-    //     <div className="flex content-end justify-end pt-4">
-    //       <Button className="pt-2" type="submit">
-    //         Salvar
-    //       </Button>
-    //     </div>
-    //   </form>
-    // </>
+    
   );
 }

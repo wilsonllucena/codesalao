@@ -7,48 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Service {
-  id          String        @id @default(uuid())
-  name        String
-  description String        @db.VarChar(500)
-  price       Float?
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime      @default(now())
-  appointment Appointment[]
-
-  @@map("services")
-}
-
-model Company {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  slug        String?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-
-  @@map("companies")
-}
-
-model Client {
-  id          String        @id @default(uuid())
-  name        String
-  email       String
-  phone       String
-  age         String?
-  address     String?
-  city        String?
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime      @default(now())
-  appointment Appointment[]
-
-  @@unique([email, userId])
-  @@map("clients")
-}
-
 // Necessary for Next auth
 model Account {
   id                       String  @id @default(cuid())
@@ -88,9 +46,67 @@ model User {
   sessions      Session[]
   client        Client[]
   service       Service[]
-  company       Company[]
+  companyId     String?
+  company       Company?      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   appointment   Appointment[]
 }
+
+
+
+model Service {
+  id          String        @id @default(uuid())
+  name        String
+  description String        @db.VarChar(500)
+  price       Float?
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  appointment Appointment[]
+
+  @@map("services")
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  slug        String?
+  user        User[]
+  unit        Unit[]
+  createdAt   DateTime @default(now())
+
+  @@map("companies")
+}
+
+model Unit {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  slug        String?
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@map("units")
+}
+
+model Client {
+  id          String        @id @default(uuid())
+  name        String
+  email       String
+  phone       String
+  age         String?
+  address     String?
+  city        String?
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  appointment Appointment[]
+
+  @@unique([email, userId])
+  @@map("clients")
+}
+
 
 model VerificationToken {
   identifier String
