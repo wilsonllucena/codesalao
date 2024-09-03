@@ -40,11 +40,11 @@ export const companyRouter = createTRPCRouter({
         data: {
             name: input.name,
             slug: createSlug(input.name),
+            userId: ctx.session.user.id,
             description: input.description || "",
-            user: { connect: { id: ctx.session.user.id } ,
           },
         }
-      });
+      );
     }),
 
   delete: protectedProcedure
