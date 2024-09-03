@@ -1,5 +1,5 @@
 import { AppointmentStatus } from "@prisma/client";
-import { addHours, set } from "date-fns";
+import { addDays, addHours, set } from "date-fns";
 import {z} from "zod";
 import { appointmentSchema } from "~/lib/schemas/appointment.schema";
 import {
@@ -68,12 +68,13 @@ export const appointmentRouter = createTRPCRouter({
 
       const { hour, date_start } = input;
       const appointmentDate = formatDate({ date_start, hour });
- 
+      const day = addDays(new Date(appointmentDate), 1);
+
 
       return ctx.db.appointment.create({
         data: {
-          date_start: appointmentDate,
-          date_end: addHours(appointmentDate, 1),
+          date_start: day,
+          date_end: day,
           hour: input.hour,
           client: { connect: { id: input.clientId } },
           service: { connect: { id: input.serviceId } },
@@ -128,6 +129,7 @@ export const appointmentRouter = createTRPCRouter({
         minutes: Number(input.hour.split(":")[1]),
       });
       const appointmentDate = addHours(formatDate, -3);
+      const day = addDays(new Date(appointmentDate), 1);
 
       return ctx.db.appointment.update({
         where: {
@@ -137,7 +139,8 @@ export const appointmentRouter = createTRPCRouter({
         data: {
           name: input.name || "",
           description: input.description || "",
-          date_start: appointmentDate,
+          date_start: day,
+          date_end: day,
           hour: input.hour,
           client: { connect: { id: input.clientId } },
           service: { connect: { id: input.serviceId } },
