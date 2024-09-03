@@ -51,8 +51,6 @@ model User {
   appointment   Appointment[]
 }
 
-
-
 model Service {
   id          String        @id @default(uuid())
   name        String
@@ -71,6 +69,7 @@ model Company {
   name        String
   description String?
   slug        String?
+  userId      String
   user        User[]
   unit        Unit[]
   createdAt   DateTime @default(now())
@@ -106,7 +105,6 @@ model Client {
   @@unique([email, userId])
   @@map("clients")
 }
-
 
 model VerificationToken {
   identifier String

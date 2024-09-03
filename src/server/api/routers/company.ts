@@ -14,9 +14,12 @@ import { createSlug } from "~/utils/create-slug";
 export const companyRouter = createTRPCRouter({
   getAll: protectedProcedure
     .query(({  ctx }) => {
-      return ctx.db.company.findMany({
-        where: { user: { id: ctx.session.user.id } },
-        orderBy: { createdAt : "desc" },
+      return ctx.db.user.findMany({
+        select: {
+          id: true,
+          company: true,
+        },
+        where: { id:  ctx.session.user.id },
       });
     }),
 
@@ -25,8 +28,7 @@ export const companyRouter = createTRPCRouter({
     .query(({ input, ctx }) => {
       return ctx.db.company.findFirst({
         where: { 
-          id: input.id,
-          userId: ctx.session.user.id,
+          id: input.id
          },
       });
     }),
@@ -51,7 +53,6 @@ export const companyRouter = createTRPCRouter({
       return await ctx.db.company.delete({
         where: { 
           id: input.id,
-          userId: ctx.session.user.id,
          },
       });
     }),
@@ -65,8 +66,7 @@ export const companyRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.company.update({
         where: { 
-          id: input.id,
-          userId: ctx.session.user.id,
+          id: input.id
          },
         data: {
           name: input.name,
