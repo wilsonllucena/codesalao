@@ -14,14 +14,20 @@ const profileSchema = z.object({
   id: z.string().optional(),
   name: z.string().nullish(),
   email: z.string().email({ message: "E-mail inválido" }),
-  company: z.array(
-    z.object({
+  company: z
+    .object({
       id: z.string().optional(),
       name: z.string().optional(),
       slug: z.string().optional(),
-      userId: z.string()
+      userId: z.string(),
+      units: z.array(
+        z.object({
+          id: z.string().optional(),
+          name: z.string().optional(),
+        }),
+      ),
     })
-  ).optional(),
+    .optional(),
 });
 
 type Profile = z.infer<typeof profileSchema>;
@@ -31,11 +37,6 @@ type ProfileFormProps = {
 };
 export function ProfileForm({ profile }: ProfileFormProps) {
   const { toast } = useToast();
-
-
-  console.log(profile);
-
-
 
   const {
     register,
@@ -47,7 +48,6 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   });
 
   const { mutate: update } = api.profile.update.useMutation();
-
 
   const handleSave = async (data: Profile) => {
     try {
@@ -63,15 +63,13 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       });
     } catch (error) {
       toast({
-        title: "Erro ao atualizar perfil"
+        title: "Erro ao atualizar perfil",
       });
     }
   };
 
-
   return (
     <>
-
       <form
         onSubmit={handleSubmit(handleSave)}
         name="formClient"
@@ -83,7 +81,6 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               Nome
             </Label>
             <Input {...register("name")} className="col-span-3" />
-
           </div>
           <div className="space-y-1">
             <Label htmlFor="email" className="text-right">
@@ -98,11 +95,10 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             <Label htmlFor="company" className="text-right">
               Unidades
             </Label>
-            {profile.company?.map((company, index) => (
+            {profile.company?.units.map((company, index) => (
               <div key={index} className="flex flex-1 space-x-2">
-
                 <Input
-                  {...register(`company.${index}.name` as const)}
+                  {...register("company.units." + index + ".name")}
                   className="col-span-3"
                   disabled
                 />

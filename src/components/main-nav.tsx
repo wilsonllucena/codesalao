@@ -35,10 +35,10 @@ export function MainNav({
         Serviços
       </Link>
       <Link
-        href="/dashboard/services"
+        href="/dashboard/company"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Unidades
+        Empresa
       </Link>
       <Link
         href="/dashboard/settings"
