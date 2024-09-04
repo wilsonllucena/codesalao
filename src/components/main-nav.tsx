@@ -34,12 +34,12 @@ export function MainNav({
       >
         Serviços
       </Link>
-      <Link
+      {/* <Link
         href="/dashboard/company"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
         Empresa
-      </Link>
+      </Link> */}
       <Link
         href="/dashboard/settings"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"

@@ -2,7 +2,6 @@
 "use client";
 
 import * as React from "react";
-import { useToast } from "../ui/use-toast";
 import { cn } from "../../lib/utils";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -13,6 +12,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { type Metadata } from "next";
+import { useToast } from "../ui/use-toast";
 
 import {
   Card,
@@ -48,11 +48,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   ) => {
     try {
       setIsLoading(true);
+
       await signIn("email", {
         email: data.email,
         callbackUrl: `${window.location.origin}/dashboard`,
         redirect: false,
       });
+
       toast({
         title: "Magic link enviado",
         description: "Verifique seu e-mail",
