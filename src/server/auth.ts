@@ -57,37 +57,6 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
-    Credentials({
-      id: "email",
-      name: "Email",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      authorize: async (credentials) => {
-        if (!credentials || !credentials.email || !credentials.password) {
-          return null;
-        }
-
-        const user = await db.user.findFirst({
-          where: {
-            email: credentials.email,
-          },
-        });
-
-        if (!user) {
-          return null;
-        }
-
-        const isValid = user!.password === credentials?.password;
-
-        if (!isValid) {
-          return null;
-        }
-
-        return user;
-      }
-    }),
     EmailProvider({
       server: {
         host: env.EMAIL_SERVER_HOST,
@@ -99,6 +68,38 @@ export const authOptions: NextAuthOptions = {
       },
       from: env.EMAIL_FROM,
     }),
+    // Credentials({
+    //   id: "email",
+    //   name: "Email",
+    //   credentials: {
+    //     email: { label: "Email", type: "email" },
+    //     password: { label: "Password", type: "password" },
+    //   },
+    //   authorize: async (credentials) => {
+    //     if (!credentials || !credentials.email || !credentials.password) {
+    //       return null;
+    //     }
+
+    //     const user = await db.user.findFirst({
+    //       where: {
+    //         email: credentials.email,
+    //       },
+    //     });
+
+    //     if (!user) {
+    //       return null;
+    //     }
+
+    //     const isValid = user!.password === credentials?.password;
+
+    //     if (!isValid) {
+    //       return null;
+    //     }
+
+    //     return user;
+    //   }
+    // }),
+
   ],
 };
 

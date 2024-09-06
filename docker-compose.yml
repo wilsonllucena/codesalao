@@ -8,6 +8,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_USER=docker
-      - POSTGRES_DB=codesalao
+      - POSTGRES_DB=glamup
     volumes:
       - ./data:/var/lib/postgresql/data
