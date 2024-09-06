@@ -1,20 +1,19 @@
 "use client";
-
 import { Button } from "~/components/ui/button";
 import { Heading } from "../_components/heading";
 
 import { useState } from "react";
 import { Modal } from "../_components/modal";
 import { CompanyTable } from "./table/data-table";
-import { FormCompany } from "./form";
 import { GET_COMPANIES } from "~/app/constants";
 import { http } from "~/lib/axios";
 import { useQuery } from "@tanstack/react-query";
+import { FormCompany } from "./form";
 
 async function getCompanies() {
-  return await http.get(`/api/cpmpany`);
+  return await http.get(`/api/company`);
 }
-export default function Page() {
+export default function Company() {
   const [open, setOpen] = useState(false);
 
   const { data: services, isLoading } = useQuery({
@@ -22,8 +21,8 @@ export default function Page() {
     queryFn: () => getCompanies(),
   });
 
-  function handleModal() {
-    setOpen(true);
+  function handleModal(open: boolean) {
+    setOpen(open);
   }
 
   return (
@@ -31,7 +30,7 @@ export default function Page() {
       <div className="flex items-center justify-between space-y-2">
         <Heading title="Empresa" />
         <div className="flex items-center space-x-2">
-          <Button onClick={handleModal}>Novo</Button>
+          <Button onClick={() => handleModal(true)}>Novo</Button>
         </div>
       </div>
 
@@ -39,8 +38,7 @@ export default function Page() {
         <CompanyTable data={services?.data.services} />
       </div>
       <Modal title="Nova empresa" open={open} onClose={() => setOpen(false)}>
-        {/* <FormCompany onClose={setOpen} /> */}
-        <p>Modal</p>
+        <FormCompany onClose={setOpen} />
       </Modal>
     </>
   );

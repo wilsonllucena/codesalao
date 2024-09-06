@@ -3,7 +3,6 @@
 import { Button } from "~/components/ui/button";
 import { Heading } from "../_components/heading";
 
-import { use, useState } from "react";
 import { Modal } from "../_components/modal";
 import { FormClient } from "./form";
 import { ClientTable } from "./table/data-table";
@@ -11,6 +10,7 @@ import { http } from "~/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { GET_CLIENTS } from "~/app/constants";
+import { useState } from "react";
 
 async function fetchClients(userId: string) {
   const clients = await http.get(`/api/client/${userId}`);
