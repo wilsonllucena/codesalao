@@ -6,7 +6,6 @@ export async function GET(
     ctx: any
 ) { 
   try {     
-    const { params } = ctx;
     const appointments = await api.appointment.getAll();
     return NextResponse.json({ appointments })
   } catch (err) {

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 "use client";
-
 import * as React from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -10,13 +8,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { type Metadata } from "next";
-import { useToast } from "../ui/use-toast";
 
 import {
   CardContent,
   CardFooter,
 } from "~/components/ui/card";
-import { useRouter } from "next/navigation";
+
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 export const metadata: Metadata = {
   title: "Autenticação",
@@ -30,13 +27,10 @@ const authSchema = z.object({
 type AuthRequest = z.infer<typeof authSchema>;
 export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const { toast } = useToast();
-  const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
   } = useForm<AuthRequest>({
     resolver: zodResolver(authSchema),
   });
@@ -46,17 +40,15 @@ export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
   ) => {
     try {
       setIsLoading(true);
-
       await signIn("credentials", {
         email: data.email,
         password: data.password,
-        callbackUrl: `${window.location.origin}/dashboard`,
+        callbackUrl: `${window.location.origin}/dashboard`
       });
-
-      router.replace("/dashboard");
       setIsLoading(false);
     } catch (error) {
-      console.log("Erro no login");
+      console.log(`Error: ${error}`);
+      setIsLoading(false);
     }
   };
 
