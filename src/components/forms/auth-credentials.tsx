@@ -13,7 +13,6 @@ import {
   CardContent,
   CardFooter,
 } from "~/components/ui/card";
-import { useSearchParams } from "next/navigation";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 export const metadata: Metadata = {
@@ -28,9 +27,7 @@ const authSchema = z.object({
 type AuthRequest = z.infer<typeof authSchema>;
 export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
-
+  
   const {
     register,
     handleSubmit,
@@ -46,7 +43,7 @@ export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
       await signIn("credentials", {
         email: data.email,
         password: data.password,
-        callbackUrl: callbackUrl ?? "/dashboard",
+        callbackUrl: `${window.location.origin}/dashboard`
       });
       setIsLoading(false);
     } catch (error) {

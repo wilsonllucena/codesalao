@@ -41,6 +41,22 @@ declare module "next-auth" {
 
 export const authOptions: NextAuthOptions = {
 
+  callbacks: {
+    async jwt({ token, user }) {
+      return { ...token , ...user};
+    },
+    async session({ session, token }) {
+      session.user = token as any;
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/",
+    signOut: "/",
+    error: "/",
+    verifyRequest: "/",
+    newUser: "/dashboard",
+  },
   // adapter: PrismaAdapter(db) as Adapter,
   providers: [
     // consigure nodemailer
@@ -85,29 +101,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  callbacks: {
-    async jwt({ token, user }) {
-      return { ...token , ...user};
-    },
-    async session({ session, token }) {
-      session.user = token as any;
-      return session;
-    },
-    // session: ({ session, user }) => ({
-    //   ...session,
-    //   user: {
-    //     ...session.user,
-    //     id: user.id,
-    //   },
-    // }),
-  },
-  pages: {
-    signIn: "/",
-    signOut: "/",
-    error: "/",
-    verifyRequest: "/",
-    newUser: "/dashboard",
-  },
+ 
 };
 
 /**
