@@ -13,8 +13,6 @@ import {
 } from "~/components/ui/form";
 import { z } from "zod";
 import { Input } from "~/components/ui/input";
-import { register } from "module";
-import { http } from "~/lib/axios";
 import { api } from "~/trpc/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { useRouter } from "next/navigation";
@@ -65,7 +63,7 @@ export default function UserRegistrationForm() {
           <CardHeader className="flex items-center justify-center">
             <CardTitle className="text-2xl">Acessar</CardTitle>
             <CardDescription>
-              Cadastre-se para acessar sua conta      
+              Cadastre-se para acessar sua conta
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">

@@ -12,6 +12,20 @@ export async function POST(req: Request, context: any) {
 
     console.log(email);
     const user = await db.user.findFirst({
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            password: true,
+            companyId: true,
+            company: {
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                }
+            }
+        },
         where: {
             email: email,
         },
@@ -41,6 +55,11 @@ export async function POST(req: Request, context: any) {
             id: user.id,
             email: user.email,
             name: user.name,
+            company: {
+                id: user.companyId,
+                name: user.company?.name,
+                slug: user.company?.slug,
+            }
          },
         }, 
         { status: 201 }

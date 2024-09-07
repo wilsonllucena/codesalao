@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { z } from "zod";
 import { clientSchema } from "~/lib/schemas/client-schema";
 import {
@@ -14,26 +10,18 @@ export const clientRouter = createTRPCRouter({
   getAll: protectedProcedure
     .query(({  ctx }) => {
       return ctx.db.client.findMany({
-        where: { user: { id: ctx.session.user.id } },
+        where: { companyId: ctx.session.user.company.id },
         orderBy: { createdAt : "desc" },
       });
     }),
 
-    all: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => {
-      return ctx.db.client.findMany({
-        orderBy: { createdAt : "desc" },
-        where: { user: { id: input.id } }
-      });
-    }),
   findById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.db.client.findFirst({
         where: { 
           id: input.id,
-          userId: ctx.session.user.id,
+          companyId: ctx!.session.user.company.id
          },
       });
     }),
@@ -46,7 +34,7 @@ export const clientRouter = createTRPCRouter({
             name: input.name,
             email: input.email,
             phone: input.phone,
-            user: { connect: { id: ctx.session.user.id } ,
+            company: { connect: { id: ctx!.session.user.company.id } ,
           },
         }
       });
@@ -59,7 +47,7 @@ export const clientRouter = createTRPCRouter({
       return await ctx.db.client.delete({
         where: { 
           id: input.id,
-          userId: ctx.session.user.id,
+          companyId: ctx!.session.user.company.id
          },
       });
     }),
@@ -75,7 +63,7 @@ export const clientRouter = createTRPCRouter({
       return ctx.db.client.update({
         where: { 
           id: input.id,
-          userId: ctx.session.user.id,
+          companyId: ctx!.session.user.company.id
          },
         data: {
           name: input.name,

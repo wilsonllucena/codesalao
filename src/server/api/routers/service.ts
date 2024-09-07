@@ -1,5 +1,3 @@
-import { Decimal } from '@prisma/client/runtime/library';
-
 import { z } from "zod";
 import { serviceSchema } from "~/lib/schemas/service.schema";
 import {
@@ -9,19 +7,18 @@ import {
 } from "~/server/api/trpc";
 
 export const serviceRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.service.findMany({
-      where: { user: { id: ctx.session.user.id } },
+  getAll: protectedProcedure.query( async ({ ctx }) => {
+    return  await ctx.db.service.findMany({
+     where: { companyId: ctx.session!.user.company.id },
       orderBy: { createdAt: "desc" },
     });
   }),
 
   all: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => {
+    .query(({ ctx }) => {
       return ctx.db.service.findMany({
         orderBy: { createdAt: "desc" },
-        where: { user: { id: input.id } },
+        where: { companyId:  ctx.session!.user.company.id },
       });
     }),
 
@@ -31,7 +28,7 @@ export const serviceRouter = createTRPCRouter({
       return ctx.db.service.findFirst({
         where: {
           id: input.id,
-          userId: ctx.session.user.id,
+          companyId: ctx.session.user.company.id
         },
       });
     }),
@@ -44,7 +41,7 @@ export const serviceRouter = createTRPCRouter({
           name: input.name,
           price: input.price,
           description: input.description || "",
-          user: { connect: { id: ctx.session.user.id } },
+          company: { connect: { id: ctx.session!.user.company.id } },
         },
       });
     }),
@@ -55,7 +52,7 @@ export const serviceRouter = createTRPCRouter({
       return await ctx.db.service.delete({
         where: {
           id: input.id,
-          userId: ctx.session.user.id,
+          companyId: ctx.session!.user.company.id,
         },
       });
     }),
@@ -73,7 +70,7 @@ export const serviceRouter = createTRPCRouter({
       return ctx.db.service.update({
         where: {
           id: input.id,
-          userId: ctx.session.user.id,
+          companyId: ctx.session!.user.company.id,
         },
         data: {
           name: input.name,

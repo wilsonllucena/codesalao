@@ -24,7 +24,7 @@ export const appointmentRouter = createTRPCRouter({
         client: { select: { name: true } },
         service: { select: { name: true } },
       },
-      where: { user: { id: ctx.session.user.id } },
+      where: { companyId: ctx.session!.user.company.id },
       orderBy: [{ createdAt: "asc" }, { hour: "asc" }, { status: "asc" }],
     });
   }),
@@ -76,6 +76,7 @@ export const appointmentRouter = createTRPCRouter({
           date_start: day,
           date_end: day,
           hour: input.hour,
+          company: { connect: { id: ctx.session.user.company.id } },
           client: { connect: { id: input.clientId } },
           service: { connect: { id: input.serviceId } },
           user: { connect: { id: ctx.session.user.id } },

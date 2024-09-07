@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
+import { randomUUID } from "crypto";
 import { z } from "zod";
 import { companySchema } from "~/lib/schemas/company.schema";
 import {
@@ -40,7 +36,8 @@ export const companyRouter = createTRPCRouter({
         data: {
             name: input.name,
             slug: createSlug(input.name),
-            userId: ctx.session.user.id,
+            user: { connect: { id: ctx.session.user.id } },
+            publicId: randomUUID(),
             description: input.description || "",
           },
         }

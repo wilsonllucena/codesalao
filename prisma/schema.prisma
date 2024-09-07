@@ -45,10 +45,8 @@ model User {
   phone         String?
   accounts      Account[]
   sessions      Session[]
-  client        Client[]
-  service       Service[]
-  companyId     String?
-  company       Company?      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   appointment   Appointment[]
 }
 
@@ -57,8 +55,8 @@ model Service {
   name        String
   description String        @db.VarChar(500)
   price       Float?
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdAt   DateTime      @default(now())
   appointment Appointment[]
 
@@ -66,14 +64,17 @@ model Service {
 }
 
 model Company {
-  id          String   @id @default(uuid())
-  name        String
+  id          String        @id @default(uuid())
+  name        String?
   description String?
   slug        String?
-  userId      String
+  publicId    String
   user        User[]
   unit        Unit[]
-  createdAt   DateTime @default(now())
+  service     Service[]
+  client      Client[]
+  appointment Appointment[]
+  createdAt   DateTime      @default(now())
 
   @@map("companies")
 }
@@ -98,12 +99,12 @@ model Client {
   age         String?
   address     String?
   city        String?
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdAt   DateTime      @default(now())
   appointment Appointment[]
 
-  @@unique([email, userId])
+  @@unique([email, companyId])
   @@map("clients")
 }
 
@@ -133,6 +134,8 @@ model Appointment {
   client      Client?            @relation(fields: [clientId], references: [id], onDelete: Cascade)
   userId      String
   user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
   serviceId   String?
   service     Service?           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   createdAt   DateTime           @default(now())
