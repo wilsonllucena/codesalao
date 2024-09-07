@@ -43,7 +43,6 @@ export const clientRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({  id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log("deleteCliente", ctx.session.user.id);
       return await ctx.db.client.delete({
         where: { 
           id: input.id,

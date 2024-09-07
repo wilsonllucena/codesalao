@@ -7,7 +7,7 @@ import {
 
 export const profileRouter = createTRPCRouter({
   getAll: protectedProcedure
-    .query(({  ctx }) => {
+    .query(({ ctx }) => {
       return ctx.db.user.findMany({
         select: {
           id: true,
@@ -15,7 +15,7 @@ export const profileRouter = createTRPCRouter({
           name: true,
           company: true,
         },
-        where: {  id: ctx.session.user.id },
+        where: { id: ctx.session.user.id },
       });
     }),
 
@@ -28,9 +28,9 @@ export const profileRouter = createTRPCRouter({
           name: true,
           company: true,
         },
-        where: { 
-          id: ctx.session.user.id,
-         },
+        where: {
+          companyId: ctx!.session.user.company.id
+        },
       });
     }),
 
@@ -39,35 +39,36 @@ export const profileRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.client.create({
         data: {
-            name: input.name,
-            email: input.email,
-            phone: input.phone,
-            user: { connect: { id: ctx.session.user.id } ,
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          company: {
+            connect: { id: ctx!.session.user.company.id },
           },
         }
       });
     }),
 
   delete: protectedProcedure
-    .input(z.object({  id: z.string() }))
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.client.delete({
-        where: { 
+        where: {
           id: input.id,
-          userId: ctx.session.user.id,
-         },
+          companyId: ctx!.session.user.company.id
+        },
       });
     }),
 
   update: protectedProcedure
-    .input(z.object({ 
+    .input(z.object({
       name: z.string(),
-     }))
+    }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.user.update({
-        where: { 
+        where: {
           id: ctx.session.user.id,
-         },
+        },
         data: {
           name: input.name,
         },
