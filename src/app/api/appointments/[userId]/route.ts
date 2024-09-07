@@ -7,7 +7,7 @@ export async function GET(
 ) { 
   try {     
     const { params } = ctx;
-    const appointments = await api.appointment.all({ id: params.userId });
+    const appointments = await api.appointment.getAll();
     return NextResponse.json({ appointments })
   } catch (err) {
     return NextResponse.json({ error: 'failed to fetch data' }, { status: 500 })

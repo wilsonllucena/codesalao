@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { params } = context;
-    const clients = await api.client.all({ id: params.userId });
+    const clients = await api.client.getAll();
     return NextResponse.json({ clients })
   } catch (err) {
     return NextResponse.json({ error: 'failed to fetch data' }, { status: 500 })
