@@ -1,5 +1,5 @@
+import { hash } from 'bcryptjs';
 import { userSchema } from '~/lib/schemas/user.schema';
-import { bcrypt } from "bcrypt"
 import {
   createTRPCRouter,
   publicProcedure,
@@ -14,7 +14,7 @@ export const userRouter = createTRPCRouter({
         data: {
           name: input.name,
           email: input.email,
-          password: bcrypt.hashSync(input.password, 10),
+          password: await hash(input.password, 10),
         },
       });
     }),

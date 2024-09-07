@@ -6,10 +6,11 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import Credentials from "next-auth/providers/credentials";
+import CredentialProvider  from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 
 import { env } from "~/env";
+import { http } from "~/lib/axios";
 import { db } from "~/server/db";
 
 /**
@@ -33,74 +34,75 @@ declare module "next-auth" {
   // }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
+
+  // adapter: PrismaAdapter(db) as Adapter,
+  providers: [
+    // consigure nodemailer
+    // EmailProvider({
+    //   server: {
+    //     host: env.EMAIL_SERVER_HOST,
+    //     port: env.EMAIL_SERVER_PORT,
+    //     auth: {
+    //       user: env.EMAIL_SERVER_USER,
+    //       pass: env.EMAIL_SERVER_PASSWORD,
+    //     },
+    //   },
+    //   from: env.EMAIL_FROM,
+    // }),
+    CredentialProvider({
+      credentials: {
+        email: {
+          label: "email",
+          type: "email",
+          placeholder: "example@gmail.com",
+        },
+        password: {
+          label: "password",
+          type: "password",
+          placeholder: "******",
+        }
+      },
+      async authorize(credentials, req) {
+        const { email, password } = credentials!;
+
+        const response = await http.post("/api/session", {
+          email,
+          password
+        });
+
+        if (response.status === 201) {
+             return response.data.user;
+        }
+        
+        return null;        
       },
     }),
+  ],
+
+  callbacks: {
+    async jwt({ token, user }) {
+      return { ...token , ...user};
+    },
+    async session({ session, token }) {
+      session.user = token as any;
+      return session;
+    },
+    // session: ({ session, user }) => ({
+    //   ...session,
+    //   user: {
+    //     ...session.user,
+    //     id: user.id,
+    //   },
+    // }),
   },
   pages: {
     signIn: "/",
-    signOut: "/",
-    error: "/",
-    verifyRequest: "/",
-    newUser: "/dashboard",
+    // signOut: "/",
+    // error: "/",
+    // verifyRequest: "/",
+    // newUser: "/dashboard",
   },
-  adapter: PrismaAdapter(db) as Adapter,
-  providers: [
-    EmailProvider({
-      server: {
-        host: env.EMAIL_SERVER_HOST,
-        port: env.EMAIL_SERVER_PORT,
-        auth: {
-          user: env.EMAIL_SERVER_USER,
-          pass: env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: env.EMAIL_FROM,
-    }),
-    // Credentials({
-    //   id: "email",
-    //   name: "Email",
-    //   credentials: {
-    //     email: { label: "Email", type: "email" },
-    //     password: { label: "Password", type: "password" },
-    //   },
-    //   authorize: async (credentials) => {
-    //     if (!credentials || !credentials.email || !credentials.password) {
-    //       return null;
-    //     }
-
-    //     const user = await db.user.findFirst({
-    //       where: {
-    //         email: credentials.email,
-    //       },
-    //     });
-
-    //     if (!user) {
-    //       return null;
-    //     }
-
-    //     const isValid = user!.password === credentials?.password;
-
-    //     if (!isValid) {
-    //       return null;
-    //     }
-
-    //     return user;
-    //   }
-    // }),
-
-  ],
 };
 
 /**
