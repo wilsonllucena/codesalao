@@ -47,8 +47,7 @@ export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
       await signIn("credentials", {
         email: data.email,
         password: data.password,
-        callbackUrl: `${window.location.origin}/dashboard`,
-        redirect: true,
+        callbackUrl: `${window.location.origin}/dashboard`
       });
       setIsLoading(false);
     } catch (error) {
