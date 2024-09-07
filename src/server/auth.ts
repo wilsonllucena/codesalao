@@ -103,10 +103,10 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/",
-    // signOut: "/",
-    // error: "/",
-    // verifyRequest: "/",
-    // newUser: "/dashboard",
+    signOut: "/",
+    error: "/",
+    verifyRequest: "/",
+    newUser: "/dashboard",
   },
 };
 

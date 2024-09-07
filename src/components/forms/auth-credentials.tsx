@@ -16,6 +16,7 @@ import {
   CardContent,
   CardFooter,
 } from "~/components/ui/card";
+import { useRouter } from "next/navigation";
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 export const metadata: Metadata = {
   title: "Autenticação",
@@ -30,6 +31,8 @@ type AuthRequest = z.infer<typeof authSchema>;
 export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { toast } = useToast();
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -47,8 +50,10 @@ export function AuthFormCredential({ className, ...props }: UserAuthFormProps) {
       await signIn("credentials", {
         email: data.email,
         password: data.password,
-        callbackUrl: `${window.location.origin}/dashboard`
+        callbackUrl: `${window.location.origin}/dashboard`,
       });
+
+      router.replace("/dashboard");
       setIsLoading(false);
     } catch (error) {
       console.log("Erro no login");
