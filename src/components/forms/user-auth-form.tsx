@@ -76,8 +76,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       <form onSubmit={handleSubmit(handleAuthenticate)}>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-
             <Input
               {...register("email")}
               type="email"
