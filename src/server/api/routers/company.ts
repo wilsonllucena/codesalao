@@ -20,11 +20,10 @@ export const companyRouter = createTRPCRouter({
     }),
 
   findById: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(({ input, ctx }) => {
+    .query(({ ctx }) => {
       return ctx.db.company.findFirst({
         where: { 
-          id: input.id
+          id: ctx!.session.user.company.id
          },
       });
     }),
