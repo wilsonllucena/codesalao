@@ -1,20 +1,14 @@
-import { type Metadata } from "next";
-import { Heading } from "~/components/heading";
-import { Button } from "~/components/ui/button";
+import React from "react";
+import {SettingsForm } from "./form";
+import { Heading } from "../_components/heading";
+import { api } from "~/trpc/server";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Clientes",
+export default async function SettingsPage(){
+  const profileResponse = await api.profile.get() as any;
+    return (
+      <>
+         <Heading title="Configurações" />
+         <SettingsForm profile={profileResponse} />
+      </>
+    );
 };
-
-export default function Clients() {
-  return (
-    <>
-      <div className="flex items-center justify-between space-y-2">
-        <Heading title="Configurações" />
-        <div className="flex items-center space-x-2">
-          <Button>Novo</Button>
-        </div>
-      </div>
-    </>
-  );
-}

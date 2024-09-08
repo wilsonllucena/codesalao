@@ -5,7 +5,7 @@ import DailyAppointmentsTable from "./appointments/daily-appointments";
 export default function Dashboard() {
   return (
     <>
-      <Heading title="Dashboad" />
+      <Heading title="Dashboard" />
       <CardDashboard />
       <DailyAppointmentsTable />
     </>

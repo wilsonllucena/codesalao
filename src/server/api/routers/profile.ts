@@ -15,12 +15,12 @@ export const profileRouter = createTRPCRouter({
           name: true,
           company: true,
         },
-        where: { id: ctx.session.user.id },
+        where: { companyId:  ctx.session!.user.company.id },
       });
     }),
 
   get: protectedProcedure
-    .query(({ input, ctx }) => {
+    .query(({ ctx }) => {
       return ctx.db.user.findFirst({
         select: {
           id: true,
@@ -36,7 +36,7 @@ export const profileRouter = createTRPCRouter({
 
   create: protectedProcedure
     .input(clientSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input, ctx }) => {
       return ctx.db.client.create({
         data: {
           name: input.name,
@@ -51,7 +51,7 @@ export const profileRouter = createTRPCRouter({
 
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input,  ctx }) => {
       return await ctx.db.client.delete({
         where: {
           id: input.id,
@@ -63,14 +63,20 @@ export const profileRouter = createTRPCRouter({
   update: protectedProcedure
     .input(z.object({
       name: z.string(),
+      companyName: z.string().nullish(),
     }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input, ctx}) => {
       return ctx.db.user.update({
         where: {
           id: ctx.session.user.id,
         },
         data: {
           name: input.name,
+          company: {
+            update: {
+              name: input.companyName,
+            },
+          },
         },
       });
     }),

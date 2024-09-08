@@ -40,9 +40,6 @@ export function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{session?.user.email}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <Link href="/dashboard/profile">
-          <DropdownMenuItem>Perfil</DropdownMenuItem>
-          </Link>
           <DropdownMenuItem onClick={() => signOut()}>Sair</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -5,6 +5,7 @@ import {
   Menu,
   Package,
   Package2,
+  SettingsIcon,
   ShoppingCart,
   Users,
   Users2,
@@ -53,23 +54,31 @@ export function NavbarMobile() {
             <Calendar className="h-5 w-5" />
             Agenda
           </Link>
-         
+
           <Link
             href="/dashboard/clients"
             className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
           >
             <Users className="h-5 w-5" />
-            Clientes         
-             </Link>
+            Clientes
+          </Link>
 
-            <Link
+          <Link
             href="/dashboard/services"
             className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
           >
             <Package className="h-5 w-5" />
             Serviços
           </Link>
-    
+
+          <Link
+            href="/dashboard/settings"
+            className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+          >
+            <SettingsIcon className="h-5 w-5" />
+            Configurações
+          </Link>
+
         </nav>
         {/* <div className="mt-auto">
           <Card>
