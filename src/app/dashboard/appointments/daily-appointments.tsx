@@ -27,6 +27,7 @@ const DailyAppointmentsTable: React.FC = () => {
 
   return (
     <div className="overflow-x-auto">
+      <div className="text-2xl font-bold py-3">Agendamentos do dia</div>
       <Table className="min-w-full divide-y divide-gray-200">
         <TableHeader>
           <TableRow>
